@@ -112,23 +112,58 @@ Další kroky:
 
 Pokud účastník chce zabudovat AI do appky, postupuj takhle:
 
-### 1. API klíč
-Zeptej se: "Máš Groq API klíč? Pokud ne, zaregistruj se na https://console.groq.com
-(free, stačí GitHub login) a vygeneruj si klíč v API Keys sekci."
+### 1. API klíč — nabídni dvě varianty
+
+**Varianta A: Gemini (doporučeno pro češtinu)**
+"Zaregistruj se na https://aistudio.google.com → Get API Key → Create.
+Free tier, žádná kreditka."
+
+**Varianta B: Groq (rychlejší, horší čeština)**
+"Zaregistruj se na https://console.groq.com (free, stačí GitHub login)
+→ API Keys → vygeneruj klíč."
 
 ### 2. Instalace a env
+
+**Gemini:**
+```bash
+npm install @google/generative-ai
+```
+```
+GEMINI_API_KEY=AI...
+```
+
+**Groq:**
 ```bash
 npm install groq-sdk
 ```
-
-Přidej do `.env.local` (bez `NEXT_PUBLIC_` — klíč nesmí být na frontendu!):
 ```
 GROQ_API_KEY=gsk_...
 ```
 
+Přidej do `.env.local` (bez `NEXT_PUBLIC_` — klíč nesmí být na frontendu!).
+
 ### 3. API Route Handler
 Vytvoř `src/app/api/ai/route.ts`:
 
+**Gemini varianta:**
+```typescript
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { NextRequest, NextResponse } from "next/server";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+
+export async function POST(req: NextRequest) {
+  const { prompt } = await req.json();
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  const result = await model.generateContent(prompt);
+
+  return NextResponse.json({
+    result: result.response.text(),
+  });
+}
+```
+
+**Groq varianta:**
 ```typescript
 import Groq from "groq-sdk";
 import { NextRequest, NextResponse } from "next/server";
@@ -152,7 +187,7 @@ export async function POST(req: NextRequest) {
 ```
 
 ### 4. Klientská komponenta
-Z UI zavolej `/api/ai` přes fetch:
+Z UI zavolej `/api/ai` přes fetch (stejné pro obě varianty):
 ```typescript
 const res = await fetch("/api/ai", {
   method: "POST",
@@ -170,10 +205,11 @@ Přizpůsob prompt podle účastníkovy appky:
 - **CRM:** "Shrň tuhle poznámku do jedné věty: [text]"
 
 **Důležité:**
-- `GROQ_API_KEY` nesmí být `NEXT_PUBLIC_` — volání LLM musí jít přes server
-- Groq free tier je štědrý, ale přidej loading state a error handling
-- Přidej `GROQ_API_KEY` i na Vercel (Environment Variables) pokud chceš deploy
-- Aktualizuj `.env.example` — přidej `GROQ_API_KEY=gsk_...your-key-here`
+- API klíč nesmí být `NEXT_PUBLIC_` — volání LLM musí jít přes server
+- Oba free tiery jsou štědré, ale přidej loading state a error handling
+- Přidej API klíč i na Vercel (Environment Variables) pokud chceš deploy
+- Aktualizuj `.env.example` — přidej `GEMINI_API_KEY=AI...your-key-here`
+  nebo `GROQ_API_KEY=gsk_...your-key-here`
 
 ## Pravidla
 

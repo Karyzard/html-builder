@@ -3,8 +3,6 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SectionEditor from "./section-editor";
 
-const STORAGE_BUCKET = "projects";
-
 export const dynamic = "force-dynamic";
 
 export default async function PageDetail({
@@ -28,11 +26,7 @@ export default async function PageDetail({
   if (!page || page.project_id !== projectId) notFound();
 
   const storagePath = `${projectId}/${page.file_path}`;
-  const { data: publicData } = supabase.storage
-    .from(STORAGE_BUCKET)
-    .getPublicUrl(storagePath);
-
-  const previewUrl = publicData?.publicUrl ?? null;
+  const previewUrl = `/api/files/${projectId}/${page.file_path}`;
 
   return (
     <div className="space-y-4">

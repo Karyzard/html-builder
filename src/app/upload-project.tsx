@@ -83,9 +83,13 @@ export default function UploadProject() {
       const storagePath = `${bucketPath}/${relative}`;
 
       const contentType = contentTypeFor(relative);
+      // Přebal do Blobu s explicitním type — Supabase klient
+      // ignoruje contentType option, pokud File má vlastní MIME.
+      const buffer = await file.arrayBuffer();
+      const blob = new Blob([buffer], { type: contentType });
       const { error: uploadErr } = await supabase.storage
         .from(STORAGE_BUCKET)
-        .upload(storagePath, file, {
+        .upload(storagePath, blob, {
           upsert: true,
           contentType,
           cacheControl: "0",

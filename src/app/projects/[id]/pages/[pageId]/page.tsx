@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import SectionEditor from "./section-editor";
 
 const STORAGE_BUCKET = "projects";
 
@@ -40,7 +41,7 @@ export default async function PageDetail({
           href={`/projects/${projectId}`}
           className="text-sm text-slate-500 hover:text-slate-900"
         >
-          ← {page.file_path.split("/")[0]}
+          ← Stránky projektu
         </Link>
         <h1 className="mt-2 text-xl font-semibold">{page.title}</h1>
         <p className="mt-1 font-mono text-xs text-slate-500">
@@ -48,25 +49,11 @@ export default async function PageDetail({
         </p>
       </div>
 
-      <div className="overflow-hidden rounded border border-slate-200 bg-white">
-        {previewUrl ? (
-          <iframe
-            src={previewUrl}
-            sandbox="allow-same-origin allow-scripts"
-            className="h-[80vh] w-full"
-            title={page.title ?? page.file_path}
-          />
-        ) : (
-          <p className="px-4 py-8 text-center text-sm text-slate-500">
-            Preview není dostupný.
-          </p>
-        )}
-      </div>
-
-      <p className="text-xs text-slate-500">
-        Editor sekcí, modal editor, flow view a snapshoty přijdou v dalších
-        feature PR.
-      </p>
+      <SectionEditor
+        pageId={page.id}
+        storagePath={storagePath}
+        previewUrl={previewUrl}
+      />
     </div>
   );
 }

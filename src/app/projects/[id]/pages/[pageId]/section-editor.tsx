@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { SECTIONS, type SectionDef } from "@/lib/sections";
 import { insertSection } from "@/lib/html-edit";
+import { contentTypeFor } from "@/lib/mime";
 
 const STORAGE_BUCKET = "projects";
 
@@ -67,11 +68,13 @@ export default function SectionEditor({
     // 3. Vlož sekci a uploadni zpět
     const newHtml = insertSection(originalHtml, section.html);
 
+    const contentType = contentTypeFor(storagePath);
     const { error: uploadErr } = await supabase.storage
       .from(STORAGE_BUCKET)
-      .upload(storagePath, new Blob([newHtml], { type: "text/html" }), {
+      .upload(storagePath, new Blob([newHtml], { type: contentType }), {
         upsert: true,
-        contentType: "text/html",
+        contentType,
+        cacheControl: "0",
       });
 
     if (uploadErr) {

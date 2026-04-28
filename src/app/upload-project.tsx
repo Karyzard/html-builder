@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { contentTypeFor } from "@/lib/mime";
 
 const STORAGE_BUCKET = "projects";
 
@@ -81,9 +82,16 @@ export default function UploadProject() {
       const relative = fullPath.substring(rootName.length + 1);
       const storagePath = `${bucketPath}/${relative}`;
 
+      const contentType = contentTypeFor(relative);
+      const buffer = await file.arrayBuffer();
+      const blob = new Blob([buffer], { type: contentType });
       const { error: uploadErr } = await supabase.storage
         .from(STORAGE_BUCKET)
-        .upload(storagePath, file, { upsert: true, contentType: file.type });
+        .upload(storagePath, blob, {
+          upsert: true,
+          contentType,
+          cacheControl: "0",
+        });
 
       if (uploadErr) {
         setStatus({

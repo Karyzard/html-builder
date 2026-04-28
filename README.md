@@ -1,8 +1,18 @@
-# PRD Vibe Kit
+# HTML Configurator
 
-Předpřipravený kit s AI agenty pro **Product Vibe Coding** workshop.
+Solo dev nástroj pro skládání **klikacích HTML prototypů** před tím, než začneš kódovat aplikaci v Next.js. Nahraj projektovou složku, skládej stránky z palety sekcí (hero, features, modal, …), edituj modály samostatně, prohlédni si flow graf propojení mezi stránkami a předej hotový prototyp agentovi jako referenci pro implementaci.
 
-Žádný kód, žádná appka — jen agenti a pravidla. Všechno si vygeneruješ sám z vlastního PRD.
+## Stack
+Next.js + Supabase (Postgres + Storage) + Tailwind + Vercel
+
+## Lokální vývoj
+```bash
+npm install
+npm run dev
+```
+
+---
+
 
 ## Quick Start
 
